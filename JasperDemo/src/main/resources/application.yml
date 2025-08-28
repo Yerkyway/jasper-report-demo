@@ -1,0 +1,74 @@
+spring:
+  application:
+    name: jasper-reports-demo
+  
+  main:
+    banner-mode: console
+
+  web:
+    resources:
+      static-locations: classpath:/static/
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,application/pdf
+
+logging:
+  level:
+    root: INFO
+    com.example.jasperdemo: DEBUG
+    net.sf.jasperreports: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/jasper-demo.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 30
+      total-size-cap: 300MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,loggers
+      base-path: /management
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+jasper:
+  demo:
+    default-template: test_report.jrxml
+    default-data: test_data.json
+    templates-path: templates/
+    data-path: data/
+    output-path: out/
+    logs-path: logs/
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+logging:
+  level:
+    root: INFO
+    com.example.jasperdemo: INFO
+
+jasper:
+  demo:
+    templates-path: /app/templates/
+    data-path: /app/data/
+    output-path: /app/out/
+    logs-path: /app/logs/

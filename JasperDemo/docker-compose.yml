@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  jasper-demo:
+    build: .
+    container_name: jasper-reports-demo
+    ports:
+      - "8080:8080"
+    volumes:
+      # Mount project directories to container
+      - ./templates:/app/templates:ro        # Read-only templates
+      - ./data:/app/data:ro                  # Read-only test data
+      - ./out:/app/out                       # Read-write for generated PDFs
+      - ./logs:/app/logs                     # Read-write for log files
+      - ./fonts:/app/fonts:ro                # Read-only fonts (optional)
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx512m -Djava.awt.headless=true
+      - SPRING_PROFILES_ACTIVE=docker
+      - TZ=UTC
+      - LOGGING_LEVEL_ROOT=INFO
+      - LOGGING_LEVEL_COM_EXAMPLE_JASPERDEMO=DEBUG
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/reports/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.example.service=jasper-reports"
+      - "com.example.version=1.0.0"
+
+volumes:
+  jasper_logs:
+    driver: local
+  jasper_out:
+    driver: local
